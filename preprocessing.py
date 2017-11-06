@@ -1,3 +1,41 @@
+"""
+    This program is used to preprocess data.
+
+    1. merge store.csv to train.csv and test.csv
+    2. generate some useful features and remove some redundant features:
+
+        Store                                 int64
+        DayOfWeek                             int64
+        Date                         datetime64[ns]
+        Sales                                 int64
+        Customers                             int64
+        Open                                  int64
+        Promo                                 int64
+        StateHoliday                         object
+        SchoolHoliday                       float64
+        StoreType                            object
+        Assortment                           object
+        CompetitionDistance                 float64
+      - CompetitionOpenSinceMonth           float64
+      - CompetitionOpenSinceYear            float64
+        Promo2                                int64
+      - Promo2SinceWeek                     float64
+      - Promo2SinceYear                     float64
+      - PromoInterval                        object
+      + Month                                 int64
+      + Year                                  int64
+      + Day                                   int64
+      + WeekOfYear                            int64
+      + YearMonth                            object
+      + IsPromo2Month                         int64     Indicates whether the date is in promo2 month
+      + Competition                           int64     Indicates whether there is a competitor on the date
+      + StoreRenovated                        int64     Indicates whether a store is a *renovated store
+      + DaysAfterRenovation                   int64
+      + MonthSale                           float64     Indicates average month sale for each store
+
+      * Renovated stores are close before 2015 for more than 2 month
+"""
+
 
 import pandas as pd
 import numpy as np
