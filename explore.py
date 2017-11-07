@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib import cm
 
 
 def drawLinePlotByAttr(df, attr, showFig=True):
@@ -27,41 +28,57 @@ def drawLinePlotByAttr(df, attr, showFig=True):
     plt.close()
 
 
-def drawBarByAttr(df, attr, showValue=True, showFig=True):
-    y = df.groupby(attr).mean().Sales
+def drawBarByAttr(df, attr, showValue=True, showFig=True, isCount=False):
+
+    if isCount:
+        keywords = 'Count'
+        y = df.groupby(attr).size()
+    else:
+        keywords = 'MeanSales'
+        y = df.groupby(attr).mean().Sales
+
     x = y.index.values.tolist()
 
     # draw figures
-    plt.bar(range(len(x)), y, tick_label=x)
+    if len(x) < 40:
+        for i in range(0, len(x)):
+            plt.bar(i, y[i], color=cm.jet(1. * i / len(x)), tick_label=x[i])
+            plt.xticks(range(len(x)), x)
+    else:
+        plt.bar(range(len(x)), y)
 
     # annotate figures
-    plt.xticks(range(len(x)), x)
     plt.xlabel(attr)
-    plt.ylabel("Average Sales")
-    plt.title("Average Sales VS {}".format(attr))
+    plt.ylabel(keywords)
+    plt.title("{} VS {}".format(keywords, attr))
 
     if showValue is True:
         for a, b in zip(range(len(x)), y):
             plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=11)
 
         # save figure
-    plt.savefig("./img/{}Average.png".format(attr[0].lower() + attr[1:]))
+    plt.savefig("./img/{}{}.png".format(attr[0].lower() + attr[1:], keywords))
 
     if showFig is True:
         plt.show()
     plt.close()
 
 
+
+
+
 train_clean = pd.read_csv('./data/trainCleaned.csv')
 test_clean = pd.read_csv('./data/testCleaned.csv')
 
+# draw line plots
 for attr in ['Month', 'Year', 'Day', 'DayOfWeek', 'WeekOfYear', 'YearMonth']:
     drawLinePlotByAttr(train_clean, attr, showFig=True)
 
-
-# for attr in ['StoreType', 'Assortment', 'StateHoliday', 'SchoolHoliday', 'Store']:
-#     if attr not in ['Store']:
-#         drawBarByAttr(train_clean, attr, showFig=True)
-#     else:
-#         drawBarByAttr(train_clean, attr, showValue=False, showFig=True)
+# draw bar plots
+for attr in ['StoreType', 'Assortment', 'StateHoliday', 'SchoolHoliday', 'Store']:
+    if attr not in ['Store']:
+        drawBarByAttr(train_clean, attr, showFig=True)
+        drawBarByAttr(train_clean, attr, showFig=True, isCount=True)
+    else:
+        drawBarByAttr(train_clean, attr, showValue=False, showFig=True)
 
