@@ -1,17 +1,19 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import cm
+import numpy as np
 
 
 def drawLinePlotByAttr(df, attr, showFig=True):
+    keywords = 'MeanSales'
     y = df.groupby(attr).mean().Sales
     x = range(1, len(y)+1)
     plt.plot(x, y, 'o-')
 
     # annotate figure
     plt.xlabel(attr)
-    plt.ylabel("Average Sales")
-    plt.title("Average Sales VS {}".format(attr))
+    plt.ylabel(keywords)
+    plt.title("{} VS {}".format(keywords, attr))
     plt.grid(True)
     if len(y) < 35:
         for a, b in zip(x, y):
@@ -22,7 +24,7 @@ def drawLinePlotByAttr(df, attr, showFig=True):
             plt.xticks(x, y.index.values.tolist())
 
     # save figure
-    plt.savefig("./img/{}Average.png".format(attr[0].lower() + attr[1:]))
+    plt.savefig("./img/{}{}.png".format(attr[0].lower() + attr[1:], keywords))
     if showFig is True:
         plt.show()
     plt.close()
@@ -64,7 +66,17 @@ def drawBarByAttr(df, attr, showValue=True, showFig=True, isCount=False):
     plt.close()
 
 
-
+def drawScatter(df, attr1, attr2):
+    x1 = df.loc[:, attr1]
+    x2 = df.loc[:, attr2]
+    m, b = np.polyfit(x1, x2, 1)
+    plt.plot(x1, x2, '.')
+    plt.plot(x1, m * x1 + b, '-')
+    plt.title("{} VS {}".format(attr2, attr1))
+    plt.xlabel(attr1)
+    plt.ylabel(attr2)
+    plt.savefig('./img/{}Vs{}.png'.format(attr1, attr2))
+    plt.show()
 
 
 train_clean = pd.read_csv('./data/trainCleaned.csv')
@@ -82,3 +94,5 @@ for attr in ['StoreType', 'Assortment', 'StateHoliday', 'SchoolHoliday', 'Store'
     else:
         drawBarByAttr(train_clean, attr, showValue=False, showFig=True)
 
+# draw scatter plots
+drawScatter(train_clean, 'Customers', 'Sales')
